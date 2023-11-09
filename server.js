@@ -3,15 +3,48 @@ const axios = require('axios');
 const expressHandlebars = require('express-handlebars')
 const path = require('path');
 const crypto = require('crypto');
-
 const app = express();
+const mongoose = require('mongoose');
+const port = process.env.port || 8080
+const Workout = require('./models/workout');
+//connect to mongodb
+const dbURI = "mongodb+srv://cthorpe2:M6u8r7f3%2A-23@cluster0.uogsy30.mongodb.net/db1";
+mongoose.connect(dbURI)
+  .then((result) => {if(require.main === module) 
+    {
+        app.listen(port, () => 
+        {
+        console.log( `Express started on http://localhost:${port}` +
+        '; press Ctrl-C to terminate.' )
+        })
+    } 
+    else 
+    {
+        module.exports = app
+    }})
+  .catch((err) => console.log(err));
 
 app.engine('handlebars',expressHandlebars.engine({
   defaultLayout: 'main',
 }))
 app.set('view engine', 'handlebars');
 
-const port = process.env.port || 8080
+
+app.get('/add-workout', (req, res) => {
+  const workout = new Workout({
+    name: 'squat', 
+    sets: 5,
+    reps: 12
+  });
+  workout.save()
+    .then((result) => {
+      res.send(result)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+})
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
@@ -48,15 +81,3 @@ app.use((err, req, res, next) => {
 
 
 
-if(require.main === module) 
-{
-    app.listen(port, () => 
-    {
-    console.log( `Express started on http://localhost:${port}` +
-    '; press Ctrl-C to terminate.' )
-    })
-} 
-else 
-{
-    module.exports = app
-}
