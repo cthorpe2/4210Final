@@ -10,7 +10,10 @@ const port = process.env.port || 8080
 const Workout = require('./models/workout');
 //connect to mongodb
 //const process.env.dbURI = config.mongoURI;
-mongoose.connect(process.env.dbURI)
+mongoose.connect(process.env.dbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then((result) => {if(require.main === module) 
     {
         app.listen(port, () => 
