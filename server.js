@@ -3,12 +3,13 @@ const axios = require('axios');
 const expressHandlebars = require('express-handlebars')
 const path = require('path');
 const crypto = require('crypto');
+const config = require('./config');
 const app = express();
 const mongoose = require('mongoose');
 const port = process.env.port || 8080
 const Workout = require('./models/workout');
 //connect to mongodb
-const dbURI = "mongodb+srv://cthorpe2:M6u8r7f3%2A-23@cluster0.uogsy30.mongodb.net/db1";
+const dbURI = config.mongoURI;
 mongoose.connect(dbURI)
   .then((result) => {if(require.main === module) 
     {
