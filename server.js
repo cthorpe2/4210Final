@@ -1,19 +1,17 @@
+require('dotenv').config();
+
 const express = require('express');
 const axios = require('axios');
 const expressHandlebars = require('express-handlebars')
 const path = require('path');
 const crypto = require('crypto');
-const config = require('./config');
 const app = express();
 const mongoose = require('mongoose');
 const port = process.env.port || 8080
 const Workout = require('./models/workout');
 //connect to mongodb
 //const process.env.dbURI = config.mongoURI;
-mongoose.connect(process.env.dbURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.dbURI)
   .then((result) => {if(require.main === module) 
     {
         app.listen(port, () => 
