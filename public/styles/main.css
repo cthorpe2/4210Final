@@ -3,19 +3,34 @@ main {
     background-color: #ffc526;
 }
 
+header h1 {
+    margin: 10px; /* Add units (e.g., pixels) to the margin */
+}
+
 body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
     background-color: #ffc526;
-    margin: 10;
-    padding: 0;
 }
 
 header {
     background-color: #ffc526;
-    color: #4c3120;
-    text-align: center;
-    padding: 20px;
+    width: 100%;
 }
 
-header h1 {
-    margin: 10;
+header img {
+    width: auto; /* Ensure the image takes the full width of the header */
+    display: block; /* Make the image a block-level element */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+.center-container {
+    text-align: center;
+    margin-top: 20px; /* Add some space between the header and the center container */
+}
+
+#board {
+    border: 1px solid #000; /* Optional: Add a border to the canvas for better visibility */
 }
