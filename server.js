@@ -1,16 +1,12 @@
 require('dotenv').config();
 
 const express = require('express');
-const axios = require('axios');
 const expressHandlebars = require('express-handlebars')
 const path = require('path');
-const crypto = require('crypto');
 const app = express();
 const mongoose = require('mongoose');
 const port = process.env.port || 8080
 const Workout = require('./models/workout');
-//connect to mongodb
-//const process.env.dbURI = config.mongoURI;
 mongoose.connect(process.env.dbURI)
   .then((result) => {if(require.main === module) 
     {
@@ -31,45 +27,55 @@ app.engine('handlebars',expressHandlebars.engine({
 }))
 app.set('view engine', 'handlebars');
 
-
-app.get('/add-workout', (req, res) => {
-  const workout = new Workout({
-    name: 'squat', 
-    sets: 5,
-    reps: 12
-  });
-  workout.save()
-    .then((result) => {
-      res.send(result)
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-})
-
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/',(req, res) => {
-    res.render('home');
-  });
+app.get('/', async (req, res) => {
+  try {
+    const workouts = await Workout.find().lean();
+    res.render('home', { workouts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('500');
+  }
+});
 
-app.post('/check-password', async (req, res) => {
-  const password = req.body.password;
-  const hash = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
-  const prefix = hash.substring(0, 5);
-  const suffix = hash.substring(5);
+app.get('/add-workout', (req, res) => {
+  res.render('add-workout');
+});
 
-    const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
-    const data = response.data;
-    const regex = new RegExp(`${suffix}:\\d+`, 'i');
+app.post('/add-workout', async (req, res) => {
+  const { name, sets, reps } = req.body;
 
-    if (regex.test(data)) {
-        res.render('result', { compromised: true });
-    } else {
-        res.render('result', { compromised: false });
+  try {
+      const workout = new Workout({
+          name,
+          sets,
+          reps,
+      });
+
+      await workout.save();
+      res.redirect('/add-workout');
+  } catch (error) {
+      console.error(error);
+      res.status(500).render('500');
+  }
+});
+
+app.post('/delete-workout/:id', async (req, res) => {
+  const workoutId = req.params.id;
+  try {
+    const deletedWorkout = await Workout.findByIdAndDelete(workoutId);
+
+    if (!deletedWorkout) {
+        console.log("Failed to delete workout");
     }
+
+    res.redirect('/');
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('500');
+  }
 });
 
 app.use((req, res, next) => {

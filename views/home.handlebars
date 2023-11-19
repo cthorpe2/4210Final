@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Have I Been Pwned Checker</title>
-    <link rel="stylesheet" type="text/css" href="/styles/main.css">
-</head>
+
 <body>
-    <div class="container">
-        <p>Check if your password has been compromised:</p>
-        <form id="password-form" action="/check-password" method="post">
-            <input type="password" name="password" id="password-input" placeholder="Enter your password" required>
-            <button type="submit">Check</button>
-        </form>
-    </div>
+    <h1>Workout List</h1>
+    
+    <a href="/add-workout" class="add-workout-link">
+        <button>Add Workout</button>
+    </a>
+
+    {{#if workouts.length}}
+        <ul>
+            {{#each workouts}}
+                <div class="workout-box">
+                    <h2>{{name}}</h2>
+                    <ul>
+                        <li>Sets: {{sets}}</li>
+                        <li>Reps: {{reps}}</li>
+                    </ul>
+                    <form action="/delete-workout/{{_id}}" method="post" class="delete-form">
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+            {{/each}}
+        </ul>
+    {{else}}
+        <p>No workouts available.</p>
+    {{/if}}
 </body>
+
 </html>
