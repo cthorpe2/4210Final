@@ -2,12 +2,13 @@
 <html lang="en">
 
 <body>
-    <h1>Workout List</h1>
-    
-    <a href="/add-workout" class="add-workout-link">
-        <button>Add Workout</button>
-    </a>
-
+    <div class="center-container">
+        <h1>Workout List</h1>
+        
+        <a href="/add-workout" class="add-workout-link">
+            <button>Add Workout</button>
+        </a>
+    </div>
     {{#if workouts.length}}
         <ul>
             {{#each workouts}}
@@ -16,16 +17,89 @@
                     <ul>
                         <li>Sets: {{sets}}</li>
                         <li>Reps: {{reps}}</li>
+                        <li>Weight: {{weight}} lbs</li>
+                        <li>Duration: {{duration}}</li>
+                        <li>Comments: {{comments}}</li>
                     </ul>
-                    <form action="/delete-workout/{{_id}}" method="post" class="delete-form">
-                        <button type="submit">Delete</button>
-                    </form>
+                    <div>
+                        <form action="/toggle-favorite/{{_id}}" method="post" class="favorite-form">
+                            <button type="button" class="favorite-button {{#if isFavorite}}favorited{{/if}}" data-workout-id="{{_id}}">★</button>
+                        </form>
+                        <button onclick="editWorkout('{{_id}}')">Edit</button>
+                        <button onclick="deleteWorkout('{{_id}}')">Delete</button>
+                    </div>
                 </div>
             {{/each}}
         </ul>
     {{else}}
         <p>No workouts available.</p>
     {{/if}}
+    <script>
+        function deleteWorkout(workoutId) {
+            if (confirm('Are you sure you want to delete this workout?')) {
+                const scrollPosition = window.scrollY;
+                fetch(`/delete-workout/${workoutId}`, {
+                    method: 'POST',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    sessionStorage.setItem('deleteMessage', data.message);
+                    location.reload();
+                    window.scrollTo(0, scrollPosition);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                });
+            }
+        }
+
+        function editWorkout(workoutId) {
+            window.location.href = `/edit-workout/${workoutId}`;
+        }
+
+        window.onload = function () {
+            const deleteMessage = sessionStorage.getItem('deleteMessage');
+            const editSuccess = new URLSearchParams(window.location.search).get('editSuccess');
+
+            if (deleteMessage) {
+                alert(deleteMessage);
+                sessionStorage.removeItem('deleteMessage');
+            }
+
+            if (editSuccess) {
+                alert('Workout edited successfully');
+                history.replaceState({}, document.title, window.location.pathname);
+            }
+        };
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const favoriteButtons = document.querySelectorAll('.favorite-button');
+
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', async function () {
+            const scrollPosition = window.scrollY;
+            const workoutId = this.dataset.workoutId;
+
+            try {
+                const response = await fetch(`/toggle-favorite/${workoutId}`, {
+                    method: 'POST',
+                });
+
+                if (response.ok) {
+                    this.classList.toggle('favorited');
+                    location.reload();
+                    window.scrollTo(0, scrollPosition);
+                } else {
+                    console.error('Failed to toggle favorite status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    });
+    </script>
 </body>
 
 </html>
