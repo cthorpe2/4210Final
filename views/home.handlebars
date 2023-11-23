@@ -10,18 +10,26 @@
         </a>
     </div>
     {{#if workouts.length}}
-        <ul>
+        <div class="workouts-container">
             {{#each workouts}}
                 <div class="workout-box">
-                    <h2>{{name}}</h2>
-                    <ul>
+                    {{#if duration}}
+                        <h2>{{name}} - {{duration}}</h2>
+                    {{else}}
+                        <h2>{{name}}</h2>
+                    {{/if}}
+                    <ul style="margin-top: 2px; margin-bottom: 2px;">
                         <li>Sets: {{sets}}</li>
                         <li>Reps: {{reps}}</li>
-                        <li>Weight: {{weight}} lbs</li>
-                        <li>Duration: {{duration}}</li>
-                        <li>Comments: {{comments}}</li>
+                        {{#if weight}}
+                            <li>Weight: {{weight}} lbs</li>
+                        {{else}}
+                            <br>
+                        {{/if}}
                     </ul>
-                    <div>
+                    <p style="height: 2px; margin-top: 2px;">Comments:</p>
+                    <p style="margin-top: 5px;" class="comments">{{comments}}</p>
+                    <div class="action-buttons">
                         <form action="/toggle-favorite/{{_id}}" method="post" class="favorite-form">
                             <button type="button" class="favorite-button {{#if isFavorite}}favorited{{/if}}" data-workout-id="{{_id}}">★</button>
                         </form>
@@ -30,7 +38,7 @@
                     </div>
                 </div>
             {{/each}}
-        </ul>
+        </div>
     {{else}}
         <p>No workouts available.</p>
     {{/if}}

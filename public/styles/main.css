@@ -29,11 +29,28 @@ header img {
     border: 1px solid #000;
     padding: 10px;
     margin: 10px;
+    width: 200px;
+    overflow: hidden;
+    word-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+}
+
+.workouts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .workout-name {
     font-weight: bold;
 }
+
+.comments{
+    height: 50px;
+    width: 100%;
+    overflow: auto;
+    resize: none;}
 
 .add-workout-link {
     text-decoration: none;
@@ -48,6 +65,18 @@ header img {
 
 .favorited {
     color: gold;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+#comments {
+    height: 15px;
+    width: 300px;
+    resize: none;
 }
 
 #board {
